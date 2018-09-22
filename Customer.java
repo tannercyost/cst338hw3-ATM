@@ -27,7 +27,7 @@ public class Customer {
         return name;
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 
@@ -35,7 +35,7 @@ public class Customer {
         return pin;
     }
 
-    public void setPin(int pin) {
+    private void setPin(int pin) {
         this.pin = pin;
     }
 

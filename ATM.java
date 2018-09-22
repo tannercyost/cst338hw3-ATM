@@ -69,15 +69,33 @@ public class ATM {
     }
     
     public void displayMenu() {
-        //TODO
+        System.out.println("===== ATM Transaction Menu =====");
+        System.out.println("\t1. Withdrawal");
+        System.out.println("\t2. Deposit");
+        System.out.println("\t3. Transfer");
     }
     
     public void status() {
-        //TODO
+        int totalTransactions = (this.getWithdrawalFail()
+                                +this.getWithdrawalSuccess()
+                                +this.getDepositSuccess()
+                                +this.getDepositFail()
+                                +this.getTransferFail()
+                                +this.getTransferSuccess());
+        int withdrawals = this.getWithdrawalFail() + this.getWithdrawalSuccess();
+        int deposits = this.getDepositFail() + this.getDepositSuccess();
+        int transfers = this.getTransferFail() + this.getTransferSuccess();
+        System.out.println("\tSerial Number: "+this.getSerialNumber());
+        System.out.println("\tBank name: "+this.getBank());
+        System.out.println("\tLocation: "+this.getLocation());
+        System.out.println("\tBalance: "+this.getFunds());
+        System.out.println("\t"+totalTransactions+" Transactions so far: ");
+        System.out.printf("\t\tWithdrawal: %d (%d success, %d fail)\n", withdrawals, this.getWithdrawalSuccess(), this.getWithdrawalFail());
+        System.out.printf("\t\tDeposit: %d (%d success, %d fail)\n", deposits, this.getDepositSuccess(), this.getDepositFail());
+        System.out.printf("\t\tTransfer: %d (%d success, %d fail)\n", transfers, this.getTransferSuccess(), this.getTransferFail());
     }
     
     public boolean isCustomer(String name) {
-        //TODO
         for (Customer item : customers) {
             if (item.getName().equals(name)) {
                 return true;
@@ -87,15 +105,78 @@ public class ATM {
     }
 
     public void withdrawal(String name, int pin, double amount) {
-        //TODO
+        if (isCustomer(name)) {
+            Customer c = getCustomer(name);
+                if (c.getPin() == pin) {
+                    if (this.getFunds() >= amount) {
+                        if (c.getBalance() > amount) {
+                            c.setBalance(c.getBalance() - amount);
+                            this.setFunds(this.getFunds() - amount);
+                            System.out.println("Succeed - withdrawal");
+                            withdrawalSuccess++;
+                        }
+                        else {
+                            System.out.println("Fail - withdrawal");
+                            withdrawalFail++;
+                        }
+                    }
+                    else {
+                        System.out.println("Fail - withdrawal");
+                        withdrawalFail++;
+                    }
+                }
+                else {
+                    System.out.println("Fail - withdrawal");
+                    withdrawalFail++;
+                }
+        }
+        else {
+            System.out.println("Fail - withdrawal");
+            withdrawalFail++;
+        }
     }
 
     public void deposit(String name, int pin, double amount) {
-
+        if (isCustomer(name)) {
+            Customer c = getCustomer(name);
+            if (c.getPin() == pin) {
+                c.setBalance(c.getBalance() + amount);
+                this.setFunds(this.getFunds() + amount);
+                System.out.println("Succeed - deposit");
+                depositSuccess++;
+            }
+            else {
+                System.out.println("Fail - deposit");
+                depositFail++;
+            }
+        }
+        else {
+            System.out.println("Fail - deposit");
+            depositFail++;
+        }
     }
 
     public boolean transfer(String nameOrigin, int pinOrigin, double amount, String nameDest, int pinDest) {
         boolean b = false;
+        if (isCustomer(nameOrigin) && isCustomer(nameDest)) {
+            Customer cOrigin = getCustomer(nameOrigin);
+            Customer cDest = getCustomer(nameDest);
+            if (cOrigin.getPin() == pinOrigin && cDest.getPin() == pinDest) {
+                cOrigin.setBalance(cOrigin.getBalance() - amount);
+                cDest.setBalance(cDest.getBalance() + amount);
+                System.out.println("Succeed - transfer");
+                transferSuccess++;
+                b = true;
+            }
+            else {
+                System.out.println("Fail - transfer");
+                transferFail++;
+            }
+        }
+        else {
+            System.out.println("Fail - transfer");
+            transferFail++;
+        }
         return b;
     }
 
@@ -148,7 +229,35 @@ public class ATM {
         return funds;
     }
 
+    public String getBank() {
+        return this.bank;
+    }
+
     private void setFunds(double funds) {
         this.funds = funds;
+    }
+
+    public int getWithdrawalSuccess() {
+        return withdrawalSuccess;
+    }
+
+    public int getWithdrawalFail() {
+        return withdrawalFail;
+    }
+
+    public int getDepositSuccess() {
+        return depositSuccess;
+    }
+
+    public int getDepositFail() {
+        return depositFail;
+    }
+
+    public int getTransferSuccess() {
+        return transferSuccess;
+    }
+
+    public int getTransferFail() {
+        return transferFail;
     }
 }

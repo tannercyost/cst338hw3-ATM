@@ -1,7 +1,10 @@
 /**
+ * Customer.java
+ * Abstract: object representing an customer who uses an ATM. Contains fields for items such as customer name,
+ *           their pin, their current balance, and what bank they belong to.
  *
- *
- *
+ * Tanner Yost
+ * 9/17/2018
  */
 public class Customer {
     private String name;
@@ -23,6 +26,9 @@ public class Customer {
         this.bank = bank;
     }
 
+    /*
+     * Getters and setters below
+     */
     public String getName() {
         return name;
     }

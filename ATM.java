@@ -1,10 +1,14 @@
+/**
+ * ATM.java
+ * Abstract: object representing an ATM, contains various methods that allow objects of type Customer to interact
+ *           with the ATM in various ways. Getter and setter methods are located at the bottom because there are many
+ *           of them and they aren't particularly interesting.
+ *
+ * Tanner Yost
+ * 9/17/2018
+ */
 import java.util.Objects;
 
-/**
- *
- *
- *
- */
 public class ATM {
     private Customer[] customers = new Customer[10];
     private int serialNumber;
@@ -94,41 +98,41 @@ public class ATM {
         System.out.printf("\t\tDeposit: %d (%d success, %d fail)\n", deposits, this.getDepositSuccess(), this.getDepositFail());
         System.out.printf("\t\tTransfer: %d (%d success, %d fail)\n", transfers, this.getTransferSuccess(), this.getTransferFail());
     }
-    
+
+    /**
+     * Checks the customer array to determine if the customer exists or not.
+     * @param name, name of customer.
+     * @return whether or not the customer exists.
+     */
     public boolean isCustomer(String name) {
-        for (Customer item : customers) {
-            if (item.getName().equals(name)) {
+        for (Customer item : customers)
+            if (item.getName().equals(name) && (item.getBank() == this.getBank())) {
                 return true;
             }
-        }
         return false;
     }
 
+    /**
+     * Checks a) if the customer exists, b) if the pin matches, c) if there are enough funds in the atm,
+     *        d) if the customer's balance is high enough, and finally e) if the bank matches.
+     *        It will set the ATMs balance and the customer's balance accordingly.
+     * @param name, customer name
+     * @param pin, customer pin
+     * @param amount, amount to be withdrawn.
+     */
     public void withdrawal(String name, int pin, double amount) {
         if (isCustomer(name)) {
             Customer c = getCustomer(name);
-                if (c.getPin() == pin) {
-                    if (this.getFunds() >= amount) {
-                        if (c.getBalance() > amount) {
-                            c.setBalance(c.getBalance() - amount);
-                            this.setFunds(this.getFunds() - amount);
-                            System.out.println("Succeed - withdrawal");
-                            withdrawalSuccess++;
-                        }
-                        else {
-                            System.out.println("Fail - withdrawal");
-                            withdrawalFail++;
-                        }
-                    }
-                    else {
-                        System.out.println("Fail - withdrawal");
-                        withdrawalFail++;
-                    }
-                }
-                else {
-                    System.out.println("Fail - withdrawal");
-                    withdrawalFail++;
-                }
+            if (c.getPin() == pin && (this.getFunds() >= amount) && (c.getBalance() > amount) && (c.getBank().equals(this.getBank()))) {
+                c.setBalance(c.getBalance() - amount);
+                this.setFunds(this.getFunds() - amount);
+                System.out.println("Succeed - withdrawal");
+                withdrawalSuccess++;
+            }
+            else {
+                System.out.println("Fail - withdrawal");
+                withdrawalFail++;
+            }
         }
         else {
             System.out.println("Fail - withdrawal");
@@ -136,10 +140,16 @@ public class ATM {
         }
     }
 
+    /**
+     *
+     * @param name, customer name
+     * @param pin, customer pin
+     * @param amount, amount to be deposited
+     */
     public void deposit(String name, int pin, double amount) {
         if (isCustomer(name)) {
             Customer c = getCustomer(name);
-            if (c.getPin() == pin) {
+            if (c.getPin() == pin && (c.getBank().equals(this.getBank()))) {
                 c.setBalance(c.getBalance() + amount);
                 this.setFunds(this.getFunds() + amount);
                 System.out.println("Succeed - deposit");
@@ -156,12 +166,21 @@ public class ATM {
         }
     }
 
+    /**
+     *
+     * @param nameOrigin, name of initiator of transfer
+     * @param pinOrigin, pin of the initiator
+     * @param amount, amount to be transferred
+     * @param nameDest, destination customer name
+     * @param pinDest, destination customer pin
+     * @return boolean detailing if the transfer was successful or not.
+     */
     public boolean transfer(String nameOrigin, int pinOrigin, double amount, String nameDest, int pinDest) {
         boolean b = false;
         if (isCustomer(nameOrigin) && isCustomer(nameDest)) {
             Customer cOrigin = getCustomer(nameOrigin);
             Customer cDest = getCustomer(nameDest);
-            if (cOrigin.getPin() == pinOrigin && cDest.getPin() == pinDest) {
+            if (cOrigin.getPin() == pinOrigin && cDest.getPin() == pinDest && (cOrigin.getBank().equals(this.getBank())) && (cDest.getBank().equals(this.getBank()))) {
                 cOrigin.setBalance(cOrigin.getBalance() - amount);
                 cDest.setBalance(cDest.getBalance() + amount);
                 System.out.println("Succeed - transfer");
@@ -180,6 +199,11 @@ public class ATM {
         return b;
     }
 
+    /**
+     *
+     * @param o, object to be compared
+     * @return boolean whether or not Object o is equal to the invoking object.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -197,7 +221,8 @@ public class ATM {
                 "Location: " + this.location + "\n" +
                 "Balance: " + this.funds;
     }
-    /**
+
+    /*
      * Setters and getters are below.
      */
     public Customer getCustomer(String name) {
@@ -209,7 +234,7 @@ public class ATM {
         return null;
     }
 
-    public int getSerialNumber() {
+    private int getSerialNumber() {
         return serialNumber;
     }
 
@@ -217,7 +242,7 @@ public class ATM {
         this.serialNumber = serialNumber;
     }
 
-    public String getLocation() {
+    private String getLocation() {
         return location;
     }
 
@@ -225,11 +250,11 @@ public class ATM {
         this.location = location;
     }
 
-    public double getFunds() {
+    private double getFunds() {
         return funds;
     }
 
-    public String getBank() {
+    private String getBank() {
         return this.bank;
     }
 
@@ -237,27 +262,27 @@ public class ATM {
         this.funds = funds;
     }
 
-    public int getWithdrawalSuccess() {
+    private int getWithdrawalSuccess() {
         return withdrawalSuccess;
     }
 
-    public int getWithdrawalFail() {
+    private int getWithdrawalFail() {
         return withdrawalFail;
     }
 
-    public int getDepositSuccess() {
+    private int getDepositSuccess() {
         return depositSuccess;
     }
 
-    public int getDepositFail() {
+    private int getDepositFail() {
         return depositFail;
     }
 
-    public int getTransferSuccess() {
+    private int getTransferSuccess() {
         return transferSuccess;
     }
 
-    public int getTransferFail() {
+    private int getTransferFail() {
         return transferFail;
     }
 }
